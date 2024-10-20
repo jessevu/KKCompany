@@ -30,4 +30,4 @@ jobs:
         run: go test ./... -v
 
       - name: Build Binary
-        run: go build -o myapp ./cmd/app
+        run: go build -o cli-tool ./cmd/main.go
