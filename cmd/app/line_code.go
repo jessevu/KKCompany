@@ -2,50 +2,54 @@ package app
 
 import (
 	"bufio"
-	"errors"
+	"cli-tool/pkg"
 	"fmt"
 	"os"
 
 	"github.com/spf13/cobra"
 )
 
-var (
-	fileName string
-)
-
 func NewLineCountCommand() *cobra.Command {
+	var filename string
 	cmd := &cobra.Command{
-		Use:   "linecount [-f {FILE_NAME} | --file {FILE_NAME}]",
-		Short: "Print line count of file",
+		Use:   pkg.LineCountUseCommand,
+		Short: pkg.LineCountShortCommand,
 		PreRunE: func(cmd *cobra.Command, args []string) error {
-			if fileName == "" {
-				return errors.New("the --file flag cannot be empty")
+			if filename == pkg.DefaultValue {
+				return pkg.ErrFileNameEmpty
 			}
 			return nil
 		},
 		Run: func(cmd *cobra.Command, args []string) {
-			file, err := os.Open(fileName)
-			if err != nil {
-				fmt.Printf("Error opening file: %v\n", err)
-				return
+			if count, err := LineCount(filename); err != nil {
+				fmt.Println("error:", err)
+			} else {
+				fmt.Println(*count)
 			}
-			defer file.Close()
-
-			scanner := bufio.NewScanner(file)
-			lineCount := 0
-			for scanner.Scan() {
-				lineCount++
-			}
-
-			if err := scanner.Err(); err != nil {
-				fmt.Printf("Error reading file: %v\n", err)
-			}
-
-			fmt.Println(lineCount)
 		},
 	}
 
-	cmd.Flags().StringVarP(&fileName, "file", "f", "", "input the file name")
-
+	cmd.Flags().StringVarP(&filename, "file", "f", "", "input the file name")
+	cmd.MarkFlagRequired("file")
 	return cmd
+}
+
+func LineCount(filePath string) (*int, error) {
+	file, err := os.Open(filePath)
+	if err != nil {
+		return nil, fmt.Errorf("no such file '%s'", filePath)
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	lineCount := 0
+	for scanner.Scan() {
+		lineCount++
+	}
+
+	if err := scanner.Err(); err != nil {
+		return nil, fmt.Errorf("error reading file: %s", err)
+	}
+
+	return &lineCount, nil
 }
