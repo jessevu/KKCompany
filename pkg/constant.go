@@ -13,3 +13,9 @@ const (
 	LineCountShortCommand = "Print line count of file"
 	CheckSumShortCommand  = "Print checksum of file"
 )
+
+const (
+	MD5    = "md5"
+	SHA1   = "sha1"
+	SHA256 = "sha256"
+)
