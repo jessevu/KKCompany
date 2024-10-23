@@ -27,20 +27,21 @@ jobs:
         run: go mod download
 
       - name: Run Tests
-        run: go test -v ./... -coverprofile=coverage.out
-        go tool cover -func=coverage.out
+        run: 
+          go test -v ./... -coverprofile=coverage.out
+          go tool cover -func=coverage.out
 
       - name: Build Binary
         run: go build -o futil ./cmd/main.go
 
       - name: Generate JUnit report
-      run: go test -v ./... | go-junit-report > report.xml
+        run: go test -v ./... | go-junit-report > report.xml
 
       - name: Upload test report
-      uses: actions/upload-artifact@v3
-      with:
-        name: test-report
-        path: report.xml
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-report
+          path: report.xml
 
       - name: Upload coverage report
         uses: actions/upload-artifact@v3
