@@ -42,17 +42,17 @@ jobs:
         name: test-report
         path: report.xml
 
-    - name: Upload coverage report
-      uses: actions/upload-artifact@v3
-      with:
-        name: coverage-report
-        path: coverage.out
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage-report
+          path: coverage.out
 
-    - name: Display coverage
-      run: go tool cover -html=coverage.out -o coverage.html
+      - name: Display coverage
+        run: go tool cover -html=coverage.out -o coverage.html
 
-    - name: Upload HTML coverage report
-      uses: actions/upload-artifact@v3
-      with:
-        name: html-coverage-report
-        path: coverage.html
+      - name: Upload HTML coverage report
+        uses: actions/upload-artifact@v3
+        with:
+          name: html-coverage-report
+          path: coverage.html
