@@ -14,18 +14,18 @@ import (
 )
 
 func NewCheckSumCommand() *cobra.Command {
-	var filename, algo string
+	var filePath, algo string
 	cmd := &cobra.Command{
 		Use:   pkg.CheckSumShortCommand,
 		Short: pkg.CheckSumShortCommand,
 		PreRunE: func(cmd *cobra.Command, args []string) error {
-			if filename == pkg.DefaultValue {
+			if filePath == pkg.DefaultValue {
 				return pkg.ErrFileNameEmpty
 			}
 			return nil
 		},
 		Run: func(cmd *cobra.Command, args []string) {
-			if hash, err := CheckSum(filename, algo); err != nil {
+			if hash, err := CheckSum(filePath, algo); err != nil {
 				fmt.Println("error:", err)
 			} else {
 				fmt.Println(*hash)
@@ -33,31 +33,31 @@ func NewCheckSumCommand() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().StringVarP(&filename, "file", "f", "", "the input file")
+	cmd.Flags().StringVarP(&filePath, "file", "f", "", "the input file")
 	cmd.Flags().StringVar(&algo, "algo", "md5", "checksum algorithm (md5, sha1, sha256)")
 	cmd.MarkFlagRequired("file")
 
 	return cmd
 }
 
-func CheckSum(filename, option string) (*string, error) {
-	file, err := os.Open(filename)
+func CheckSum(filePath, option string) (*string, error) {
+	file, err := os.Open(filePath)
 	if err != nil {
-		return nil, fmt.Errorf("no such file '%s'", filename)
+		return nil, fmt.Errorf("no such file '%s'", filePath)
 	}
 	defer file.Close()
 
 	var hash string
 	switch option {
-	case "md5":
+	case pkg.MD5:
 		h := md5.New()
 		io.Copy(h, file)
 		hash = hex.EncodeToString(h.Sum(nil))
-	case "sha1":
+	case pkg.SHA1:
 		h := sha1.New()
 		io.Copy(h, file)
 		hash = hex.EncodeToString(h.Sum(nil))
-	case "sha256":
+	case pkg.SHA256:
 		h := sha256.New()
 		io.Copy(h, file)
 		hash = hex.EncodeToString(h.Sum(nil))
