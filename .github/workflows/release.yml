@@ -1,0 +1,51 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - 'v*'  # Trigger on version tags, e.g., v1.0.0
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Check out repository
+      uses: actions/checkout@v3
+
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: 1.22  # Use the required Go version
+
+    - name: Install dependencies
+      run: go mod download
+
+    - name: Build binary
+      run: |
+        go build -o futil ./cmd/main.go
+
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: binaries
+        path: |
+          futil
+
+  release:
+    runs-on: ubuntu-latest
+    needs: build  # Ensure the release runs only after the build job
+
+    steps:
+    - name: Download artifacts from build job
+      uses: actions/download-artifact@v3
+      with:
+        name: binaries
+
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          futil
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -26,8 +26,10 @@ jobs:
       - name: Install Dependencies
         run: go mod download
 
-      - name: Run Tests
-        run: go test ./... -v
+      - name: Run tests with coverage
+        run: |
+          go test -v ./... -coverprofile=coverage.out
+          go tool cover -func=coverage.out
 
       - name: Build Binary
         run: go build -o futil ./cmd/main.go
