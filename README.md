@@ -9,6 +9,6 @@ A command-line utility for file operations.
 ## Build and Run
 
 ```bash
-go build -o futil ./cmd/futil.go
+go build -o futil ./cmd/main.go
 ./futil linecount -f myfile.txt
 ```
